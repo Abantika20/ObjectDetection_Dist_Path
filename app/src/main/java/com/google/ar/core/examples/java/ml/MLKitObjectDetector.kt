@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 package com.google.ar.core.examples.java.ml
-
+import com.google.ar.core.examples.java.ml.R.*
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
@@ -61,7 +61,9 @@ class MLKitObjectDetector(context: Activity) : ObjectDetector(context) {
 
   // For the ML Kit default model, use the following:
 //  val builder = ObjectDetectorOptions.Builder()
-
+  companion object {
+    val TAG = "HelloArRenderer"
+  }
   private val options = builder
     .setDetectorMode(CustomObjectDetectorOptions.SINGLE_IMAGE_MODE)
     .enableClassification()
@@ -70,6 +72,7 @@ class MLKitObjectDetector(context: Activity) : ObjectDetector(context) {
   private val detector = ObjectDetection.getClient(options)
 
   override suspend fun analyze(image: Image, imageRotation: Int): List<DetectedObjectResult> {
+    print("Working")
     // `image` is in YUV (https://developers.google.com/ar/reference/java/com/google/ar/core/Frame#acquireCameraImage()),
     val convertYuv = convertYuv(image)
 
@@ -83,7 +86,7 @@ class MLKitObjectDetector(context: Activity) : ObjectDetector(context) {
       val bestLabel = obj.labels.maxByOrNull { label -> label.confidence } ?: return@mapNotNull null
       val coords = obj.boundingBox.exactCenterX().toInt() to obj.boundingBox.exactCenterY().toInt()
       val rotatedCoordinates = coords.rotateCoordinates(rotatedImage.width, rotatedImage.height, imageRotation)
-
+      Log.i(TAG, "coords: $coords")
       DetectedObjectResult(bestLabel.confidence, bestLabel.text, rotatedCoordinates)
     }
   }
@@ -187,6 +190,7 @@ class Measurement(context: Activity) : AppCompatActivity(), Scene.OnUpdateListen
   }
 
   private fun initDistanceTable(){
+    print("working 1")
     for (i in 0 until Constants.maxNumMultiplePoints +1){
       val tableRow = TableRow(this)
       multipleDistanceTableLayout.addView(tableRow,
